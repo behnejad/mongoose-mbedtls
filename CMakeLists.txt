@@ -11,7 +11,7 @@ add_compile_definitions(MG_ENABLE_MBEDTLS=1)
 #link_directories(${CMAKE_SOURCE_DIR}/)
 
 include_directories(${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/mbed)
-add_executable(untitled main.c mongoose.c
+add_executable(untitled main.c api.c cJSON.c mongoose.c
         mbed/aes.c
         mbed/aesni.c
         mbed/aria.c

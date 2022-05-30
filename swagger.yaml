@@ -1,0 +1,191 @@
+swagger: '2.0'
+info:
+  title: REST API Document
+  description: Terminal REST api document.
+  version: 1.0.0
+  termsOfService: http://swagger.io/terms/
+  contact:
+    email: apiteam@swagger.io
+  license:
+    name: GPLv2
+    url: https://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+
+host: 192.168.1.1
+
+basePath: /api/v1/
+
+tags:
+  - name: device
+    description: Device Information
+  - name: merchant
+    description: Merchant Information
+  - name: config
+    description: Configuration
+  - name: tran
+    description: Transaction
+  - name: report
+    description: Transaction reports
+
+schemes:
+  - http
+
+paths:
+  /device:
+    get:
+      tags:
+        - device
+      summary: get device information
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/DeviceInfo'
+
+  /merchant:
+    get:
+      tags:
+        - merchant
+      summary: get merchant information
+      responses:
+        '200':
+          description: OK
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/MerchantInfo'
+
+  /config/switchs:
+    get:
+      tags:
+        - config
+      summary: get switches configuration
+      responses:
+        '200':
+          description: OK
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/ServerInfo'
+
+  /report/total:
+    get:
+      tags:
+        - report
+      summary: get total summery report
+      parameters:
+        - name: shift
+          in: query
+          required: true
+          type: integer
+          default: 0
+          description: shift number for report
+
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/SumReport'
+
+
+definitions:
+  DeviceInfo:
+    type: object
+    properties:
+      serial_number:
+        type: string
+      part_number:
+        type: string
+        description: device part number
+      date_time:
+        type: string
+        description: gregorian date in format "YYYY-MM-DD HH:mm:SS"
+      date_time_fa:
+        type: string
+        description: jalali date in format "YYYY-MM-DD HH:mm:SS"
+
+  MerchantInfo:
+    type: object
+    properties:
+      name:
+        type: string
+        description: merchant name in persian, encoded in utf-8
+      telephone:
+        type: string
+        description: merchant registered telephone number
+      zip:
+        type: string
+        description: merchant zip code
+      terminal:
+        type: string
+        description: merchant terminal code
+      merchant:
+        type: string
+        description: merchant merchant code
+      shift:
+        type: integer
+        description: current shift number
+
+  ServerInfo:
+    type: object
+    properties:
+      switch:
+        type: string
+        description: switch usage, e.x. transaction/voucher/tms
+      ip:
+        type: string
+      port:
+        type: integer
+      tls:
+        type: integer
+      tel1:
+        type: string
+      tel2:
+        type: string
+
+  SumReport:
+    type: object
+    properties:
+      shift:
+        type: integer
+      purchase_count:
+        type: string
+        description: total number of purchase with three digit separator.
+      purchase_sum:
+        type: string
+        description: total amount of purchase with three digit separator in Rials.
+      bill_count:
+        type: string
+        description: total number of bill with three digit separator.
+      bill_sum:
+        type: string
+        description: total amount of bill with three digit separator in Rials.
+      voucher_count:
+        type: string
+        description: total number of voucher with three digit separator.
+      voucher_sum:
+        type: string
+        description: total amount of voucher with three digit separator in Rials.
+      topup_count:
+        type: string
+        description: total number of topup with three digit separator.
+      topup_sum:
+        type: string
+        description: total amount of topup with three digit separator in Rials.
+
+  Transaction:
+    type: object
+    properties:
+      row_id:
+        type: integer
+      pan:
+        type: string
+        description: masked pan "dddddd - *** - dddd"
+      bank:
+        type: string
+        description: issuer name in persian, encoded in utf-8
+
+
+
+
+
+

@@ -143,7 +143,7 @@ void fn_http (struct mg_connection *c, int ev, void *ev_data, void *fn_data)
 //    }
 //}
 
-int main()
+int main1()
 {
     mg_log_set("0");
     mg_mgr_init(&mgr);
