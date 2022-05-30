@@ -15,7 +15,7 @@
 #define KCYN  "\x1B[36m"
 #define KWHT  "\x1B[37m"
 
-#define HTTP_SRV    "www.google.com"
+#define HTTP_SRV            "www.google.com"
 const char * HTTP_SERVER = "http_server";
 const char * HTTP_CLIENT = "http_client";
 int loop = 1;
@@ -103,15 +103,32 @@ void fn_http (struct mg_connection *c, int ev, void *ev_data, void *fn_data)
             }
             else if (mg_match(http_msg->uri, mg_str("/dir#"), &cap))
             {
-                http_msg->uri.len = cap.len;
-                http_msg->uri.ptr = cap.ptr;
-                mg_http_serve_dir(c, ev_data, &dir_opts);
+                char org_pass[50] = {0}, pass[100];
+
+                mg_md5_ctx ctx;
+                mg_md5_init(&ctx);
+                mg_md5_update(&ctx, "hooman", 6);
+                mg_md5_final(&ctx, org_pass + sizeof(org_pass) - 17);
+                mg_hex(org_pass + sizeof(org_pass) - 17, 16, org_pass);
+
+                mg_http_creds(http_msg, pass, sizeof(pass), pass, sizeof(pass));
+                if (pass[0] == NULL || strcmp(pass, org_pass) != 0)
+                {
+                    mg_http_reply(c, 401, "WWW-Authenticate: Basic realm=\"Transmission\"\r\nConnection: close\r\n", "");
+                    c->is_draining = 1;
+                }
+                else
+                {
+                    http_msg->uri.len = cap.len;
+                    http_msg->uri.ptr = cap.ptr;
+                    mg_http_serve_dir(c, http_msg, &dir_opts);
+                }
             }
             else
             {
                 mg_http_reply(c, 404, "Connection: close\r\n", "");
                 c->is_draining = 1;
-                loop = 0;
+//                loop = 0;
             }
         }
     }
@@ -131,7 +148,7 @@ int main()
     mg_log_set("0");
     mg_mgr_init(&mgr);
 
-    mg_http_connect(&mgr, HTTP_SRV":443", fn_http, HTTP_CLIENT);
+//    mg_http_connect(&mgr, HTTP_SRV":443", fn_http, HTTP_CLIENT);
     mg_http_listen(&mgr, "https://127.0.0.1:8443", fn_http, HTTP_SERVER);
 //    mg_listen(&mgr, "tcp://0.0.0.0:1234", cb, NULL);
 
